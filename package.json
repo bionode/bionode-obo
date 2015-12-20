@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test/obo.spec.js",
-    "docs": "jsdoc2md --template docs/README.hbs src/obo.js > README.md && jsdoc src/obo.js -d docs"
+    "docs": "jsdoc2md --template docs/README.hbs src/*.js > README.md && jsdoc src/*.js -d docs"
   },
   "repository": {
     "type": "git",
@@ -19,5 +19,9 @@
   "homepage": "https://github.com/thejmazz/bionode-obo#readme",
   "devDependencies": {
     "chai": "^3.4.1"
+  },
+  "dependencies": {
+    "event-stream": "^3.3.2",
+    "through2": "^2.0.0"
   }
 }
