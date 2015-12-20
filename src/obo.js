@@ -21,27 +21,24 @@ const CE = require('./emitter')
  */
 exports.parse = function (stream) {
   let emitter = CE()
-
   let ccm = _.charCodeMap('[]{}:\n')
 
   let curr = 0
   let next
+  let line
 
   // Emit `line` events
-  stream.pipe(through(function (chunk, enc, cb) {
+  stream.pipe(through( (chunk) => {
     for (let i=0; i < chunk.length; i++) {
       if (chunk[i] == ccm['\n']) {
         next = _.getNextNewline(curr, chunk)
-        let line = chunk.slice(curr, next)
-        curr = next+1
-        if (!(line.length === 0))
+        line = chunk.slice(curr, next)
+        curr = next + 1
+        if (!(line.length === 0)) {
           emitter.writeline(line)
+        }
       }
     }
-
-    // don't need this since the pipeline ends here
-    // this.push(chunk)
-    // cb()
   }))
 
   emitter.on('line', (chunk) => {
