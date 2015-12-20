@@ -1,0 +1,23 @@
+{
+  "name": "bionode-obo",
+  "version": "0.0.1",
+  "description": "OBO flat file format parser for ontologies",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/obo.spec.js",
+    "docs": "jsdoc2md --template docs/README.hbs src/obo.js > README.md && jsdoc src/obo.js -d docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thejmazz/bionode-obo.git"
+  },
+  "author": "Julian Mazzitelli <mazzitell.julian@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thejmazz/bionode-obo/issues"
+  },
+  "homepage": "https://github.com/thejmazz/bionode-obo#readme",
+  "devDependencies": {
+    "chai": "^3.4.1"
+  }
+}
