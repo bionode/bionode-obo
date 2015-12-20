@@ -1,6 +1,5 @@
 'use strict'
 
-const fs = require('fs')
 const EventEmitter = require('events')
 const util = require('util')
 
@@ -18,35 +17,37 @@ const CE = require('./emitter')
 
 /**
  * Parse OBO 1.2 file
- * @return {string} the parsed output
+ * @return {stream} the readable stream of an OBO file from fs or www
  */
-exports.parse = function () {
-  return 'foo'
-}
+exports.parse = function (stream) {
+  let emitter = CE()
+  // emitter.prototype.writeline = function(chunk) {
+  //   this.emit('line', chunk)
+  // }
 
-let LineEmitter = CE()
+  let ccm = _.charCodeMap('[]{}:\n')
 
-let ccm = _.charCodeMap('[]{}:\n')
+  let curr = 0
+  let next
 
-let curr = 0
-let next
-
-let stream = fs.createReadStream('SyRO.obo')
-  .pipe(through(function (chunk, enc, cb) {
+  // Emit `line` events
+  stream.pipe(through(function (chunk, enc, cb) {
     for (let i=0; i < chunk.length; i++) {
       if (chunk[i] == ccm['\n']) {
         next = _.getNextNewline(curr, chunk)
         let line = chunk.slice(curr, next)
         curr = next+1
         if (!(line.length === 0))
-          LineEmitter.write(line.toString())
+          emitter.write(line)
       }
     }
 
-    this.push(chunk)
-    cb()
+    // don't need this since the pipeline ends here
+    // this.push(chunk)
+    // cb()
   }))
 
-LineEmitter.on('data', function(data) {
-  console.log(data)
-})
+  emitter.on('data', (chunk) => {
+    console.log(chunk.toString())
+  })
+}
