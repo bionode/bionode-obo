@@ -3,6 +3,10 @@
 Parse OBO files.
 
 ## API Documentation
+
+See [here](https://cdn.rawgit.com/thejmazz/bionode-obo/master/docs/module-bionode-obo.html)
+or below.
+
 Parse OBO files. Emits a `term` object stream.
 
 <a name="module_bionode-obo.parse"></a>
