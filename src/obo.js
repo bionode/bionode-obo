@@ -1,9 +1,14 @@
 'use strict'
 
+const fs = require('fs')
+const EventEmitter = require('events')
+const util = require('util')
+
 const through = require('through2')
 const es = require('event-stream')
-const fs = require('fs')
-const util = require('./util')
+
+const _ = require('./util')
+const CE = require('./emitter')
 
 /**
  * Parse OBO files. Emits a `term` object stream.
@@ -19,10 +24,9 @@ exports.parse = function () {
   return 'foo'
 }
 
+let LineEmitter = CE()
 
-
-let cm = util.charCodeMap('[]{}:\n')
-let j = 0
+let ccm = _.charCodeMap('[]{}:\n')
 
 let curr = 0
 let next
@@ -30,40 +34,19 @@ let next
 let stream = fs.createReadStream('SyRO.obo')
   .pipe(through(function (chunk, enc, cb) {
     for (let i=0; i < chunk.length; i++) {
-      if (chunk[i] === cm['\n']) {
-        j++
-      }
-      let activeColon = false
-      // if (chunk[i] == cm[':'] && !activeColon) {
-      //   next = util.getNextNewline(curr, chunk)
-      //   let mini = chunk.slice(curr, next)
-      //   let key = chunk.slice(curr,i).toString()
-      //   let val = chunk.slice(i+1, next).toString()
-      //   curr = next
-      //
-      //   activeColon = true
-      //   console.log(JSON.stringify({key, val}))
-      //   // this.emit('error', null)
-      // }
-      if (chunk[i] == cm['\n']) {
-        next = util.getNextNewline(curr, chunk)
+      if (chunk[i] == ccm['\n']) {
+        next = _.getNextNewline(curr, chunk)
         let line = chunk.slice(curr, next)
         curr = next+1
         if (!(line.length === 0))
-          console.log('line:', line.toString())
+          LineEmitter.write(line.toString())
       }
     }
 
     this.push(chunk)
     cb()
   }))
-  .pipe(es.through(function(data) {
-    console.log(data.toString().split('\n').length)
-    console.log(j)
-    this.emit('data', data)
-  }))
-  // .pipe(process.stdout)
 
-stream.on('newline', function(data) {
+LineEmitter.on('data', function(data) {
   console.log(data)
 })
