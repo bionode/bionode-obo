@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: bionode-obo</title>
+    <title>JSDoc: Module: emitter</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: bionode-obo</h1>
+    <h1 class="page-title">Module: emitter</h1>
 
     
 
@@ -31,6 +31,8 @@
         
             
         
+            
+        
     
 </header>
 
@@ -38,7 +40,7 @@
     <div class="container-overview">
     
         
-            <div class="description">Parse OBO files. Emits a `term` object stream.</div>
+            <div class="description">A small wrapper around custom event emitters.</div>
         
 
         
@@ -87,7 +89,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obo.js.html">obo.js</a>, <a href="obo.js.html#line13">line 13</a>
+        <a href="emitter.js.html">emitter.js</a>, <a href="emitter.js.html#line4">line 4</a>
     </li></ul></dd>
     
 
@@ -114,37 +116,18 @@
 
 
         
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
             
 
     
 
-    <h4 class="name" id=".parse"><span class="type-signature">(static) </span>parse<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id="module:emitter"><span class="type-signature"></span>(require("emitter"))<span class="signature">()</span><span class="type-signature"> &rarr; {object}</span></h4>
 
     
 
 
 
 <div class="description">
-    Parse OBO 1.2 file
+    Return a new custom event emitter
 </div>
 
 
@@ -188,7 +171,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obo.js.html">obo.js</a>, <a href="obo.js.html#line23">line 23</a>
+        <a href="emitter.js.html">emitter.js</a>, <a href="emitter.js.html#line14">line 14</a>
     </li></ul></dd>
     
 
@@ -215,7 +198,8 @@
 
         
 <div class="param-desc">
-    the parsed output
+    a function inheriting from EventEmitter with a default
+                 `#write()` method
 </div>
 
 
@@ -226,7 +210,7 @@
     </dt>
     <dd>
         
-<span class="param-type">string</span>
+<span class="param-type">object</span>
 
 
     </dd>
@@ -237,6 +221,21 @@
 
 
         
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
     
 
     

@@ -7,14 +7,15 @@ Parse OBO files.
 See [here](https://cdn.rawgit.com/thejmazz/bionode-obo/master/docs/module-bionode-obo.html)
 or below.
 
-Parse OBO files. Emits a `term` object stream.
+A small wrapper around custom event emitters.
 
-<a name="module_bionode-obo.parse"></a>
-### bionode-obo.parse() ⇒ <code>string</code>
-Parse OBO 1.2 file
+<a name="exp_module_emitter--module.exports"></a>
+### module.exports() ⇒ <code>object</code> ⏏
+Return a new custom event emitter
 
-**Kind**: static method of <code>[bionode-obo](#module_bionode-obo)</code>  
-**Returns**: <code>string</code> - the parsed output  
+**Kind**: Exported function  
+**Returns**: <code>object</code> - a function inheriting from EventEmitter with a default
+                 `#write()` method  
 
 ## License
 

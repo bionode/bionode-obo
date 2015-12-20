@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: obo.js</title>
+    <title>JSDoc: Source: emitter.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: obo.js</h1>
+    <h1 class="page-title">Source: emitter.js</h1>
 
     
 
@@ -26,58 +26,31 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>'use strict'
-
-const fs = require('fs')
-const EventEmitter = require('events')
+            <pre class="prettyprint source linenums"><code>const EventEmitter = require('events')
 const util = require('util')
 
-const through = require('through2')
-const es = require('event-stream')
-
-const _ = require('./util')
-const CE = require('./emitter')
-
 /**
- * Parse OBO files. Emits a `term` object stream.
- * @module bionode-obo
+ * A small wrapper around custom event emitters.
+ * @module emitter
  */
 
-
 /**
- * Parse OBO 1.2 file
- * @return {string} the parsed output
+ * Return a new custom event emitter
+ * @return {object} a function inheriting from EventEmitter with a default
+ *                  `#write()` method
  */
-exports.parse = function () {
-  return 'foo'
+module.exports = function() {
+  function customEmitter() {
+    EventEmitter.call(this)
+  }
+  util.inherits(customEmitter, EventEmitter)
+
+  customEmitter.prototype.write = function(data) {
+    this.emit('data', data)
+  }
+
+  return new customEmitter()
 }
-
-let LineEmitter = CE()
-
-let ccm = _.charCodeMap('[]{}:\n')
-
-let curr = 0
-let next
-
-let stream = fs.createReadStream('SyRO.obo')
-  .pipe(through(function (chunk, enc, cb) {
-    for (let i=0; i &lt; chunk.length; i++) {
-      if (chunk[i] == ccm['\n']) {
-        next = _.getNextNewline(curr, chunk)
-        let line = chunk.slice(curr, next)
-        curr = next+1
-        if (!(line.length === 0))
-          LineEmitter.write(line.toString())
-      }
-    }
-
-    this.push(chunk)
-    cb()
-  }))
-
-LineEmitter.on('data', function(data) {
-  console.log(data)
-})
 </code></pre>
         </article>
     </section>
