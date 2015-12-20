@@ -4,4 +4,4 @@ const fs = require('fs')
 
 const obo = require('../src/obo')
 
-obo.parse(fs.createReadStream('SyRO.obo'))
+obo.parse(fs.createReadStream(__dirname + '/SyRO.obo'))

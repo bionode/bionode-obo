@@ -21,5 +21,9 @@ module.exports = function() {
     this.emit('data', data)
   }
 
+  customEmitter.prototype.writeline = function(chunk) {
+    this.emit('line', chunk)
+  }
+
   return new customEmitter()
 }

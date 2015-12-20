@@ -21,9 +21,6 @@ const CE = require('./emitter')
  */
 exports.parse = function (stream) {
   let emitter = CE()
-  // emitter.prototype.writeline = function(chunk) {
-  //   this.emit('line', chunk)
-  // }
 
   let ccm = _.charCodeMap('[]{}:\n')
 
@@ -38,7 +35,7 @@ exports.parse = function (stream) {
         let line = chunk.slice(curr, next)
         curr = next+1
         if (!(line.length === 0))
-          emitter.write(line)
+          emitter.writeline(line)
       }
     }
 
@@ -47,7 +44,7 @@ exports.parse = function (stream) {
     // cb()
   }))
 
-  emitter.on('data', (chunk) => {
+  emitter.on('line', (chunk) => {
     console.log(chunk.toString())
   })
 }
