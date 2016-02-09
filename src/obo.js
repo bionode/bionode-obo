@@ -6,6 +6,7 @@ const util = require('util')
 const through = require('through2')
 const es = require('event-stream')
 
+const highland = require('highland')
 const _ = require('./util')
 const CE = require('./emitter')
 
@@ -44,4 +45,12 @@ exports.parse = function (stream) {
   emitter.on('line', (chunk) => {
     console.log(chunk.toString())
   })
+}
+
+exports.parseHL = function (stream) {
+  highland(stream)
+    .splitBy('\n')
+    .filter(line => line.length !== 0)
+    .map(line => `${line}\n`)
+    .pipe(process.stdout)
 }
