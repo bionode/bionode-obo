@@ -41,7 +41,7 @@ const termParser = (term) => {
  */
 exports.parse = function (stream) {
   highland(stream)
-    .splitBy('[Term]')
+    .splitBy(/\[[a-zA-Z]+\]/i)
     .map(term => termParser(term))
     .map(term => JSON.stringify(term, null, 2) + '\n')
     .pipe(process.stdout)
