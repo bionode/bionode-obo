@@ -1,6 +1,6 @@
 # bionode-obo
 
-Parse OBO files.
+Parse OBO files, in a stream!
 
 ## API Documentation
 
