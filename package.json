@@ -21,8 +21,7 @@
     "chai": "^3.4.1"
   },
   "dependencies": {
-    "event-stream": "^3.3.2",
     "highland": "^2.6.0",
-    "through2": "^2.0.0"
+    "lodash": "^4.3.0"
   }
 }
