@@ -18,13 +18,52 @@ const emitter = new EventEmitter2({
   maxListeners: 10
 })
 
+emitter.once('header', header => console.log('HEADER: ' + JSON.stringify(stanzaParser(header), null, 2)))
+
+highland('stanza', emitter)
+  // .each(stanza => stanzaParser(stanza))
+  // .each(parsedStanza => JSON.stringify(parsedStanza, null, 2))
+  .each(stanza => console.log('STANZA: ' + JSON.stringify(stanzaParser(stanza), null, 2)))
+
+let header = true
+let headerStr = ''
+
+let term = false
+let termStr = ''
+
+
 highland('line', emitter)
-  .each(line => console.log('evented: ' + line))
+  .each(line => {
+    if (line.indexOf('[Term]') !== -1 || line.indexOf('[Typedef]') !== -1 || line.indexOf('[Instance]') !== -1) {
+      // Found a [Term]
+      header = false
+      term = !term
+    } 
+
+    if (header) {
+      headerStr += line + '\n'
+    } else {
+      // Will keep emitting each time even if we are done parsing the header
+      emitter.emit('header', headerStr)
+    }
+
+    if (term) {
+      termStr += line + '\n'
+      // console.log('TERM: ', line)
+    } else if (!term && !header) {
+      term = !term
+      // console.log('!TERM: ', line) 
+      emitter.emit('stanza', termStr)
+      // don't include [TERM] for now so stanzaParser works
+      // termStr = ''
+      termStr = line + '\n' 
+    }
+  })
 
 const getLines = (stream) => {
   return stream
     .splitBy('\n')
-    .each(line => emitter.emit('line', line))
+    .each(line => emitter.emit('line', line)) 
 }
 
 exports.parse2 = highland.pipeline(highland.through(getLines))
@@ -39,8 +78,8 @@ exports.parse2 = highland.pipeline(highland.through(getLines))
  * storing the object in memory at once, on the other side. Better to provide
  * an Object stream as well as an ndjson stream.
  */
-const termParser = (term) => {
-  return term
+const stanzaParser = (stanza) => {
+  return stanza
     .split('\n')
     // Filter out empty lines
     .filter(l => l.length !== 0)
