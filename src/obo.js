@@ -4,7 +4,6 @@ const _ = require('lodash')
 const highland = require('highland')
 const EventEmitter2 = require('eventemitter2').EventEmitter2
 
-
 /**
  * Parse OBO files. Emits a [Term] object stream.
  * @module bionode-obo
@@ -18,14 +17,16 @@ const emitter = new EventEmitter2({
   maxListeners: 10
 })
 
-emitter.once('header', header => console.log('HEADER: ' + JSON.stringify(stanzaParser(header), null, 2)))
+emitter.addListener('header', header => console.log('HEADER: ' + JSON.stringify(stanzaParser(header), null, 2)))
 
 highland('stanza', emitter)
-  // .each(stanza => stanzaParser(stanza))
-  // .each(parsedStanza => JSON.stringify(parsedStanza, null, 2))
-  .each(stanza => console.log('STANZA: ' + JSON.stringify(stanzaParser(stanza), null, 2)))
+  .map(stanza => stanzaParser(stanza))
+  .map(stanza => JSON.stringify(stanza, null, 2))
+  .each(stanza => console.log('STANZA: ' + stanza))
 
+// Flags and buffers
 let header = true
+let headerComplete = false
 let headerStr = ''
 
 let term = false
@@ -34,17 +35,17 @@ let termStr = ''
 
 highland('line', emitter)
   .each(line => {
-    if (line.indexOf('[Term]') !== -1 || line.indexOf('[Typedef]') !== -1 || line.indexOf('[Instance]') !== -1) {
-      // Found a [Term]
+    if (line.match(/^\[[a-z]+\]/i)) {
+      // Found a stanza 
       header = false
       term = !term
     } 
 
     if (header) {
       headerStr += line + '\n'
-    } else {
-      // Will keep emitting each time even if we are done parsing the header
+    } else if (!headerComplete) {
       emitter.emit('header', headerStr)
+      headerComplete = true
     }
 
     if (term) {
@@ -66,8 +67,11 @@ const getLines = (stream) => {
     .each(line => emitter.emit('line', line)) 
 }
 
-exports.parse2 = highland.pipeline(highland.through(getLines))
-
+/**
+ * Parse OBO 1.2 file
+ * @return {stream} the readable stream of an OBO file from fs or www
+ */
+exports.parse = highland.pipeline(highland.through(getLines))
 
 /**
  * Parse one [Term] at once.
@@ -94,16 +98,3 @@ const stanzaParser = (stanza) => {
       return prev
     }, {} )
 }
-
-/**
- * Parse OBO 1.2 file
- * @return {stream} the readable stream of an OBO file from fs or www
- */
-exports.parse = function (stream) {
-  highland(stream)
-    .splitBy(/\[[a-zA-Z]+\]/i)
-    .map(term => termParser(term))
-    .map(term => JSON.stringify(term, null, 2) + '\n')
-    .pipe(process.stdout)
-}
-

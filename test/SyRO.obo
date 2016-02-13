@@ -10,6 +10,10 @@ name: structural role
 def: "A role relating to establishing the physical existence or the integrity of a system." []
 creation_date: 2015-10-25T22:04:05Z
 
+[NewTermType]
+id: ID:0000055
+name: Test
+
 [Term]
 id: ID:0000001
 name: functional role
