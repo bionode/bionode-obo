@@ -2,11 +2,32 @@
 
 const _ = require('lodash')
 const highland = require('highland')
+const EventEmitter2 = require('eventemitter2').EventEmitter2
+
 
 /**
  * Parse OBO files. Emits a [Term] object stream.
  * @module bionode-obo
  */
+
+// Setting up event emitter
+const emitter = new EventEmitter2({
+  wildcard: false,
+  delimiter: '.',
+  newListener: true,
+  maxListeners: 10
+})
+
+highland('line', emitter)
+  .each(line => console.log('evented: ' + line))
+
+const getLines = (stream) => {
+  return stream
+    .splitBy('\n')
+    .each(line => emitter.emit('line', line))
+}
+
+exports.parse2 = highland.pipeline(highland.through(getLines))
 
 
 /**
@@ -47,10 +68,3 @@ exports.parse = function (stream) {
     .pipe(process.stdout)
 }
 
-exports.parse2 = function (stream) {
-  highland(stream)
-    .splitBy('[Term]')
-    .intersperse('[Term]')
-    .map(thing => '_' + thing + '\n') 
-    .pipe(process.stdout)
-}

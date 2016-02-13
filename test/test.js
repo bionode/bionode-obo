@@ -5,6 +5,10 @@ const request = require('request')
 
 const obo = require('../src/obo')
 
-obo.parse2(fs.createReadStream(__dirname + '/SyRO.obo'))
+const readStream = fs.createReadStream(__dirname + '/SyRO.obo')  
+
+readStream
+  .pipe(obo.parse2)
+  .pipe(process.stdout)
 
 // obo.parse(request.get('http://purl.obolibrary.org/obo/go/go-basic.obo'))

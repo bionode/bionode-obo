@@ -21,6 +21,7 @@
     "chai": "^3.4.1"
   },
   "dependencies": {
+    "eventemitter2": "^0.4.14",
     "highland": "^2.6.0",
     "lodash": "^4.3.0",
     "request": "^2.69.0"
