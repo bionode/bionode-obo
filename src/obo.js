@@ -47,3 +47,10 @@ exports.parse = function (stream) {
     .pipe(process.stdout)
 }
 
+exports.parse2 = function (stream) {
+  highland(stream)
+    .splitBy('[Term]')
+    .intersperse('[Term]')
+    .map(thing => '_' + thing + '\n') 
+    .pipe(process.stdout)
+}
