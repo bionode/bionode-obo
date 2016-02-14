@@ -5,7 +5,8 @@ const highland = require('highland')
 const EventEmitter2 = require('eventemitter2').EventEmitter2
 
 /**
- * Parse OBO files. Emits a [Term] object stream.
+ * Parse OBO files from an input stream.
+ * Emits a [Term] object stream or ndjson stream.
  * @module bionode-obo
  */
 
@@ -32,15 +33,19 @@ let headerStr = ''
 let term = false
 let termStr = ''
 
-
+// Watch for `line` events from the emitter
+// TODO stop using events, as this stream "never ends"
 highland('line', emitter)
   .each(line => {
+    // If we found a new stanza, swap term flag
     if (line.match(/^\[[a-z]+\]/i)) {
-      // Found a stanza 
+      // Found a stanza
       header = false
       term = !term
-    } 
+    }
 
+    // Emit header once
+    // TODO headerStr buffer can be termStr
     if (header) {
       headerStr += line + '\n'
     } else if (!headerComplete) {
@@ -48,33 +53,39 @@ highland('line', emitter)
       headerComplete = true
     }
 
+
     if (term) {
+      // If we are currently buffering a stanza, continue to do so
       termStr += line + '\n'
-      // console.log('TERM: ', line)
     } else if (!term && !header) {
+      // Term flag will have been swapped if we encountered a [Term], [Typedef], etc
+      // Then emit the currently completed stanza, and swap the flag back so we
+      // continue to buffer a new stanza
       term = !term
-      // console.log('!TERM: ', line) 
       emitter.emit('stanza', termStr)
-      // don't include [TERM] for now so stanzaParser works
-      // termStr = ''
-      termStr = line + '\n' 
+      termStr = line + '\n'
     }
   })
 
+// Emits a `line` event with each line passed in
+// TODO mitigate using events, event stream doesn't know when it ends
 const getLines = (stream) => {
   return stream
     .splitBy('\n')
-    .each(line => emitter.emit('line', line)) 
+    .each(line => emitter.emit('line', line))
 }
 
+// map stanza text to an object representation
 const parseStanzas = (stream) => {
   return stream.map(stanza => stanzaParser(stanza))
 }
 
+// map objects to stringified lines
 const ndjsonIfy = (stream) => {
   return stream.map(obj => JSON.stringify(obj) + '\n')
 }
 
+// filter out [Term]s
 const termsFilter = (stream) => {
   return stream.filter(obj => obj[''] === '[Term]')
 }
@@ -85,13 +96,24 @@ const termsFilter = (stream) => {
  */
 exports.parse = highland.pipeline(highland.through(getLines))
 
+/**
+ * Produce [Term]s object stream
+ * @param  {stream} stream stream from fs or www
+ * @return {stream}        object stream
+ */
 exports.terms = (stream) => {
   highland(stream).through(getLines)
 
   return highland('stanza', emitter)
     .through(parseStanzas)
+    .through(termsFilter)
 }
 
+/**
+ * Produce [Term]s ndjson stream
+ * @param  {stream} stream strem from fs or www
+ * @return {stream}        ndjson stream
+ */
 exports.termsNdjson = (stream) => {
   highland(stream).through(getLines)
 
@@ -116,11 +138,11 @@ const stanzaParser = (stanza) => {
     // Filter out empty lines
     .filter(l => l.length !== 0)
     // Reduce array into object of key:val
-    .reduce( (prev, curr) => { 
+    .reduce( (prev, curr) => {
       const sep = curr.indexOf(':')
       const key = curr.substring(0, sep)
       const val = _.trim(curr.substring(sep+1))
-      
+
       prev[key] = val
 
       return prev
