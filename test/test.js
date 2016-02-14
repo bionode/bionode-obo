@@ -8,7 +8,9 @@ const obo = require('../src/obo')
 const readStream = fs.createReadStream(__dirname + '/SyRO.obo')  
 const liveStream = request.get('http://purl.obolibrary.org/obo/go/go-basic.obo') 
 
-readStream
-  .pipe(obo.parse)
-  .pipe(process.stdout)
+// readStream
+//   .pipe(obo.parse)
+//   .pipe(process.stdout)
 
+obo.terms(readStream)
+  .pipe(process.stdout)

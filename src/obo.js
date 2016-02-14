@@ -73,6 +73,15 @@ const getLines = (stream) => {
  */
 exports.parse = highland.pipeline(highland.through(getLines))
 
+exports.terms = (stream) {
+  highland(stream).through(getLines)
+
+  return highland('stanza', emitter)
+    .map(stanza => stanzaParser(stanza))
+    .map(stanza => JSON.stringify(stanza, null, 2))
+    // .each(stanza => console.log('STANZA: ' + stanza)) 
+}
+
 /**
  * Parse one [Term] at once.
  *
