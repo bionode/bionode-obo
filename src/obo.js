@@ -17,12 +17,12 @@ const emitter = new EventEmitter2({
   maxListeners: 10
 })
 
-emitter.addListener('header', header => console.log('HEADER: ' + JSON.stringify(stanzaParser(header), null, 2)))
+// emitter.addListener('header', header => console.log('HEADER: ' + JSON.stringify(stanzaParser(header), null, 2)))
 
-highland('stanza', emitter)
-  .map(stanza => stanzaParser(stanza))
-  .map(stanza => JSON.stringify(stanza, null, 2))
-  .each(stanza => console.log('STANZA: ' + stanza))
+// highland('stanza', emitter)
+//   .map(stanza => stanzaParser(stanza))
+//   .map(stanza => JSON.stringify(stanza, null, 2))
+//   .each(stanza => console.log('STANZA: ' + stanza))
 
 // Flags and buffers
 let header = true
@@ -67,19 +67,31 @@ const getLines = (stream) => {
     .each(line => emitter.emit('line', line)) 
 }
 
+const ndjsonIfy = (stream) => {
+  return stream.map(obj => JSON.stringify(obj) + '\n')
+}
+
 /**
  * Parse OBO 1.2 file
  * @return {stream} the readable stream of an OBO file from fs or www
  */
 exports.parse = highland.pipeline(highland.through(getLines))
 
-exports.terms = (stream) {
+exports.terms = (stream) => {
   highland(stream).through(getLines)
 
   return highland('stanza', emitter)
     .map(stanza => stanzaParser(stanza))
-    .map(stanza => JSON.stringify(stanza, null, 2))
+    // .map(stanza => JSON.stringify(stanza, null, 2))
     // .each(stanza => console.log('STANZA: ' + stanza)) 
+}
+
+exports.termsNdjson = (stream) => {
+  highland(stream).through(getLines)
+
+  return highland('stanza', emitter)
+    .map(stanza => stanzaParser(stanza) )
+    .through(ndjsonIfy)
 }
 
 /**
