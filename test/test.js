@@ -16,9 +16,9 @@ const liveStream = request.get('http://purl.obolibrary.org/obo/go/go-basic.obo')
 // obo.terms(readStream)
 //   .pipe(through.obj( function(chunk, enc, cb) {
 //     console.log(chunk)
-//     
+//
 //     cb()
 //   } ))
 
-obo.termsNdjson(readStream)
+obo.termsNdjson(liveStream)
   .pipe(process.stdout)

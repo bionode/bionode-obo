@@ -67,8 +67,16 @@ const getLines = (stream) => {
     .each(line => emitter.emit('line', line)) 
 }
 
+const parseStanzas = (stream) => {
+  return stream.map(stanza => stanzaParser(stanza))
+}
+
 const ndjsonIfy = (stream) => {
   return stream.map(obj => JSON.stringify(obj) + '\n')
+}
+
+const termsFilter = (stream) => {
+  return stream.filter(obj => obj[''] === '[Term]')
 }
 
 /**
@@ -81,16 +89,15 @@ exports.terms = (stream) => {
   highland(stream).through(getLines)
 
   return highland('stanza', emitter)
-    .map(stanza => stanzaParser(stanza))
-    // .map(stanza => JSON.stringify(stanza, null, 2))
-    // .each(stanza => console.log('STANZA: ' + stanza)) 
+    .through(parseStanzas)
 }
 
 exports.termsNdjson = (stream) => {
   highland(stream).through(getLines)
 
   return highland('stanza', emitter)
-    .map(stanza => stanzaParser(stanza) )
+    .through(parseStanzas)
+    .through(termsFilter)
     .through(ndjsonIfy)
 }
 
