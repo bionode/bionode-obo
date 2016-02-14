@@ -1,6 +1,6 @@
 {
   "name": "bionode-obo",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "OBO flat file format parser for ontologies",
   "main": "index.js",
   "scripts": {
