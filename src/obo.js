@@ -2,13 +2,15 @@
 
 const _ = require('lodash')
 const highland = require('highland')
-const EventEmitter2 = require('eventemitter2').EventEmitter2
+const EventEmitter2 = require('eventemitter2').EventEmitter2 || require('eventemitter2')
 
 /**
  * Parse OBO files from an input stream.
  * Emits a [Term] object stream or ndjson stream.
  * @module bionode-obo
  */
+
+console.log(require('eventemitter2').EventEmitter2)
 
 // Setting up event emitter
 const emitter = new EventEmitter2({
