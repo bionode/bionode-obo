@@ -21,10 +21,13 @@
     "chai": "^3.4.1"
   },
   "dependencies": {
+    "bl": "^1.1.2",
     "eventemitter2": "^0.4.14",
     "highland": "^2.6.0",
     "lodash": "^4.3.0",
     "request": "^2.69.0",
-    "through2": "^2.0.1"
+    "split": "^1.0.0",
+    "through2": "^2.0.1",
+    "through2-filter": "^2.0.0"
   }
 }
