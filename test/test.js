@@ -27,14 +27,16 @@ const receiveHeader = (data) => {
   console.log(data)
 }
 
-// readStream
-//   .pipe(obo.parse)
-//   .pipe(process.stdout)
+readStream
+  .pipe(obo.parse(receiveHeader))
+  // .on('header', receiveHeader)
+  // .map(obj => JSON.stringify(obj))
+  .pipe(process.stdout)
 
-hl(obo.parse(readStream).on('header', receiveHeader))
-  // .map(chunk => chunk.toString() + '=========')
-  .each(chunk => console.log(chunk))
-  .done(() => console.log('DONE'))
+// hl(obo.parse(readStream).on('header', receiveHeader))
+//   // .map(chunk => chunk.toString() + '=========')
+//   .each(chunk => console.log(chunk))
+//   .done(() => console.log('DONE'))
 
 // hl(readStream.pipe(through()))
 //   .each(chunk => console.log(chunk.toString()))

@@ -4,6 +4,7 @@ const through = require('through2')
 const filter = require('through2-filter')
 const split = require('split')
 const BufferList = require('bl')
+const pumpify = require('pumpify')
 
 const charCode = (char) => new Buffer(char)[0]
 
@@ -42,17 +43,18 @@ const parseStanza = (stanzaBuffer) => stanzaBuffer
     return stanza
   }, {})
 
-const parse = (stream) => {
+const parse = (h) => {
 
   const transform = function (chunk, enc, next) {
     // Line starts with [
     if (chunk[0] === charCode('[')) {
       if (header) {
         this.emit('header', parseStanza(stanzaBuffer.slice()))
+        h(parseStanza(stanzaBuffer.slice()))
         header = false
       } else {
         // Push what we have collected for the current set of key:value pairs
-        this.push(parseStanza(stanzaBuffer.slice()))
+        this.push(JSON.stringify(parseStanza(stanzaBuffer.slice())) + '\n')
       }
 
       // and start again
@@ -64,17 +66,21 @@ const parse = (stream) => {
   }
 
   const flush = function() {
-    this.push(parseStanza(stanzaBuffer.slice()))
+    this.push(JSON.stringify(parseStanza(stanzaBuffer.slice())) + '\n')
     this.push(null)
   }
 
-  return stream
-    .pipe(split())
-    .pipe(skipEmpties)
-    .pipe(through.obj(transform, flush))
+  // return stream
+  //   .pipe(split())
+  //   .pipe(skipEmpties)
+  //   .pipe(through.obj(transform, flush))
+  return through(transform, flush)
 }
 
-exports.parse = parse
+exports.parse = (h) => {
+  return pumpify(split(), skipEmpties, parse(h))
+}
+
 exports.parseNdjson = (stream) => {
   return parse(stream)
     .pipe(through.obj(function (obj, enc, next) {
