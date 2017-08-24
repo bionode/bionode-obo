@@ -12,7 +12,7 @@ describe('obo', function() {
       obo.parse.should.be.a('function')
     })
 
-    it('should return `foo`', function() {
+    it.skip('should return `foo`', function() {
       obo.parse().should.equal('foo')
     })
   })
